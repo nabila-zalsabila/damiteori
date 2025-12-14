@@ -30,13 +30,25 @@ st.subheader("📊 Dataset")
 st.dataframe(df.head())
 
 # =========================
-# PREPROCESSING
+# TENTUKAN TARGET
 # =========================
-X = df.drop("target", axis=1)
-y = df["target"]
+possible_targets = ["target", "output", "HeartDisease", "num"]
 
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
+target_col = None
+for col in possible_targets:
+    if col in df.columns:
+        target_col = col
+        break
+
+if target_col is None:
+    st.error("Kolom target tidak ditemukan di dataset")
+    st.stop()
+
+st.success(f"Kolom target terdeteksi: {target_col}")
+
+X = df.drop(target_col, axis=1)
+y = df[target_col]
+
 
 # =========================
 # TRAIN MODEL
