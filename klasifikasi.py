@@ -46,12 +46,19 @@ if target_col is None:
 
 st.success(f"Kolom target terdeteksi: {target_col}")
 
+# =========================
+# PREPROCESSING
+# =========================
 X = df.drop(target_col, axis=1)
 y = df[target_col]
 
-# =========================
-# SCALING DATA
-# =========================
+# Encode data kategorik
+X = pd.get_dummies(X, drop_first=True)
+
+# Simpan kolom training
+feature_columns = X.columns
+
+# Scaling
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
@@ -65,7 +72,6 @@ X_train, X_test, y_train, y_test = train_test_split(
 # =========================
 # TRAIN MODEL
 # =========================
-
 model = LogisticRegression(max_iter=1000)
 model.fit(X_train, y_train)
 
@@ -84,7 +90,7 @@ with st.form("prediction_form"):
 
     with col1:
         age = st.number_input("Umur", 20, 100, 50)
-        sex = st.selectbox("Jenis Kelamin", [0, 1], format_func=lambda x: "Perempuan" if x == 0 else "Laki-laki")
+        sex = st.selectbox("Jenis Kelamin", ["M", "F"])
         cp = st.selectbox("Tipe Nyeri Dada (cp)", [0, 1, 2, 3])
         trestbps = st.number_input("Tekanan Darah Istirahat", 80, 200, 120)
         chol = st.number_input("Kolesterol", 100, 600, 200)
@@ -97,7 +103,7 @@ with st.form("prediction_form"):
         oldpeak = st.number_input("Oldpeak", 0.0, 6.0, 1.0)
         slope = st.selectbox("Slope", [0, 1, 2])
         ca = st.selectbox("Jumlah Pembuluh (ca)", [0, 1, 2, 3, 4])
-        thal = st.selectbox("Thal", [0, 1, 2, 3])
+        thal = st.selectbox("Thal", ["normal", "fixed", "reversible"])
 
     submitted = st.form_submit_button("🔍 Prediksi")
 
@@ -105,13 +111,33 @@ with st.form("prediction_form"):
 # PREDIKSI
 # =========================
 if submitted:
-    input_data = pd.DataFrame([[
-        age, sex, cp, trestbps, chol, fbs,
-        restecg, thalach, exang, oldpeak,
-        slope, ca, thal
-    ]], columns=X.columns)
+    # Data input user
+    input_data = pd.DataFrame([{
+        "age": age,
+        "sex": sex,
+        "cp": cp,
+        "trestbps": trestbps,
+        "chol": chol,
+        "fbs": fbs,
+        "restecg": restecg,
+        "thalach": thalach,
+        "exang": exang,
+        "oldpeak": oldpeak,
+        "slope": slope,
+        "ca": ca,
+        "thal": thal
+    }])
 
+    # Encode input
+    input_data = pd.get_dummies(input_data)
+
+    # Samakan kolom dengan data training
+    input_data = input_data.reindex(columns=feature_columns, fill_value=0)
+
+    # Scaling
     input_scaled = scaler.transform(input_data)
+
+    # Prediksi
     prediction = model.predict(input_scaled)[0]
 
     st.subheader("📌 Hasil Prediksi")
