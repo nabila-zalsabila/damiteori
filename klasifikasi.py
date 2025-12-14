@@ -99,22 +99,22 @@ if st.button("🔍 Prediksi Risiko"):
     # =========================
     st.subheader("📊 Hasil Prediksi")
 
-    # Gunakan PROBABILITAS, bukan label keras
-    if prob_yes >= 70:
-        st.error("⚠️ RISIKO TINGGI")
-    elif prob_yes >= 50:
-        st.warning("⚠️ RISIKO SEDANG")
+    if prob_yes is not None:
+        if prob_yes >= 70:
+            st.error("⚠️ RISIKO TINGGI")
+        elif prob_yes >= 50:
+            st.warning("⚠️ RISIKO SEDANG")
+        else:
+            st.success("✅ RISIKO RENDAH")
+
+        st.write(f"Probabilitas Tidak Berisiko: **{prob_no}%**")
+        st.write(f"Probabilitas Berisiko: **{prob_yes}%**")
     else:
-        st.success("✅ RISIKO RENDAH")
-
-    st.write(f"Probabilitas Tidak Berisiko: **{prob_no}%**")
-    st.write(f"Probabilitas Berisiko: **{prob_yes}%**")
-
-    st.info(f"Model yang digunakan: **{model_choice}**")
-
-    st.caption(
-        "⚠️ Hasil prediksi bersifat estimasi berbasis data dan tidak menggantikan diagnosis dokter."
-    )
+        # fallback jika probabilitas tidak tersedia
+        if prediction == 1:
+            st.error("⚠️ Hasil: BERISIKO")
+        else:
+            st.success("✅ Hasil: TIDAK BERISIKO")
 
 # =========================
 # DEBUG OPSIONAL (HAPUS JIKA TIDAK PERLU)
