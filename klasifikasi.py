@@ -20,6 +20,7 @@ st.write("Deteksi berita Hoaks atau Fakta menggunakan NLP")
 @st.cache_data
 def load_data():
     hoaks = pd.read_csv("komdigi_hoaks.csv")
+    st.write(hoaks.columns)
 
     # Gabungkan kolom teks (sesuaikan dengan dataset kamu)
     hoaks["text"] = hoaks["title"].fillna("") + " " + hoaks["content"].fillna("")
@@ -37,6 +38,7 @@ def load_data():
 
     data = pd.concat([hoaks[["text", "label"]], fakta], ignore_index=True)
     return data
+
 
 data = load_data()
 
