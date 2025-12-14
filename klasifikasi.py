@@ -27,6 +27,11 @@ st.write(
 # =========================
 st.info(
     "📌 **Catatan Penting**\n\n"
+    "Aplikasi ini menggunakan model Support Vector Machine (SVM) yang dipilih "
+    "berdasarkan hasil perbandingan dengan Random Forest. "
+    "Model SVM memiliki kemampuan deteksi risiko yang lebih baik "
+    "berdasarkan nilai recall dan F1-score.\n\n"
+    "Hasil prediksi bersifat edukatif dan tidak menggantikan pemeriksaan dokter."
     "- Beberapa data diolah dalam bentuk **angka (0 atau 1)** karena model "
     "Machine Learning hanya dapat memproses data numerik.\n"
     "- **Pengguna cukup memilih opsi yang tersedia**, sistem akan mengubahnya "
@@ -35,6 +40,8 @@ st.info(
     "- 0 = Perempuan\n"
     "- 1 = Laki-laki"
 )
+
+
 
 # =========================
 # LOAD DATA
@@ -145,10 +152,18 @@ if st.button("Prediksi Risiko"):
     input_scaled = scaler.transform(input_data)
     prediction = model.predict(input_scaled)[0]
 
-    if prediction == 1:
-        st.error("⚠️ Anda memiliki **risiko penyakit jantung**.")
-    else:
-        st.success("✅ Anda **tidak berisiko penyakit jantung**.")
+if prediction == 1:
+    st.warning(
+        "⚠️ **Hasil Prediksi SVM**\n\n"
+        "Berdasarkan pengolahan data menggunakan model Support Vector Machine (SVM), "
+        "data yang dimasukkan memiliki **pola yang menyerupai pasien dengan risiko penyakit jantung**.\n\n"
+        "⚠️ Hasil ini bersifat **edukatif** dan **tidak menggantikan diagnosis medis**."
+    )
+else:
+    st.success(
+        "✅ **Hasil Prediksi SVM**\n\n"
+        "Berdasarkan model SVM, data yang dimasukkan **tidak menunjukkan pola risiko penyakit jantung**."
+    )
 
 # =========================
 # ===== BAGIAN PENGUJIAN =====
